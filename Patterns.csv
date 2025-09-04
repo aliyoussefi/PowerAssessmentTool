@@ -1,0 +1,7 @@
+﻿PatternId,PatternCategory,PatternDocLink,PatternRule,PatternCondition,PatternValue,PatternDescription,PatternScore,PatternSeverity,PatternSubType,PatternType,Answer
+dv-recyclebin,Resiliency,http://tempuri.org,RecycleBinEnabled,equals,TRUE,Update Recycle Bin,1,High,FeatureSetting,DataversePattern,FALSE
+dv-solutionhistory,Resiliency,http://tempuri.org,SolutionHistoryFailures,after,30days,Failed Solution Activity,1,Critical,SolutionHistory,DataversePattern,
+dv-EnableDesktopFlowShareVanillaImage,Resiliency,http://tempuri.org,EnableDesktopFlowShareVanillaImage,equals,TRUE,EnableDesktopFlowShareVanillaImage,1,Medium,FeatureSetting,DataversePattern,
+dv-EnableSecurityOnAttachment,Security,http://tempuri.org,EnableSecurityOnAttachment,equals,TRUE,EnableSecurityOnAttachment,1,Critical,FeatureSetting,DataversePattern,
+dv-FCBEnableFlowsInSolutionByDefault,Operational Excellence,http://tempuri.org,FCB.EnableFlowsInSolutionByDefault,equals,TRUE,FCB.EnableFlowsInSolutionByDefault,1,Critical,FeatureSetting,DataversePattern,
+dv-FCBEnableCanvasAppsInSolutionsByDefault,Operational Excellence,http://tempuri.org,FCB.EnableCanvasAppsInSolutionsByDefault,equals,TRUE,FCB.EnableCanvasAppsInSolutionsByDefault,1,Critical,FeatureSetting,DataversePattern,
