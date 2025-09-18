@@ -1,0 +1,296 @@
+kind: AdaptiveDialog
+modelDescription: Only use this topic if a user asks for help with a readout file.
+beginDialog:
+  kind: OnRedirect
+  id: main
+  actions:
+    - kind: SendActivity
+      id: sendActivity_0XSiff
+      activity: I am _process_ **readout**
+
+    - kind: InvokeConnectorAction
+      id: invokeConnectorAction_Y7cWTn
+      displayName: Get Assessment Responses with Recommendations
+      input:
+        binding:
+          entityName: msft_assessments
+          fetchXml: <fetch top="50">   <entity name="msft_assessment">     <filter>       <condition attribute="msft_assessmentid" operator="eq" value="95ddce68-0a94-f011-b4cc-00224805b95c" />     </filter>     <link-entity name="msft_assessmentquestionresponse" from="creb3_parentassessment" to="msft_assessmentid" link-type="outer">       <attribute name="msft_name" />       <attribute name="msft_assessmentquestion" />       <link-entity name="msft_assessmentquestion" from="msft_assessmentquestionid" to="msft_assessmentquestion" link-type="inner">         <attribute name="msft_questiontext" />         <link-entity name="msft_assessmentquestionrecommendation" from="msft_question" to="msft_assessmentquestionid" link-type="outer">           <attribute name="msft_recommendation" />         </link-entity>       </link-entity>     </link-entity>   </entity> </fetch>
+          organization: current
+
+      output:
+        kind: SingleVariableOutputBinding
+        variable: Topic.ListRecordsWithOrganization
+
+      connectionReference: creb3_assessmentAgent.shared_commondataserviceforapps.shared-commondataser-15032637-2412-4e4c-b4c4-b24b17c89e23
+      connectionProperties:
+        mode: Invoker
+
+      dynamicOutputSchema:
+        kind: Record
+        properties:
+          @odata.nextLink:
+            displayName: Next link
+            description: The url to fetch next page data.
+            visibility: Advanced
+            order: 1
+            type: String
+
+          value:
+            order: 0
+            type:
+              kind: Table
+              properties:
+                _createdby_value:
+                  displayName: Created By (Value)
+                  description: Unique identifier of the user who created the record.
+                  visibility: Advanced
+                  order: 4
+                  type: String
+
+                _createdby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Created By (Type)
+                  description: Unique identifier of the user who created the record.
+                  visibility: Advanced
+                  order: 3
+                  type: String
+
+                _createdonbehalfby_value:
+                  displayName: Created By (Delegate) (Value)
+                  description: Unique identifier of the delegate user who created the record.
+                  visibility: Advanced
+                  order: 2
+                  type: String
+
+                _createdonbehalfby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Created By (Delegate) (Type)
+                  description: Unique identifier of the delegate user who created the record.
+                  visibility: Advanced
+                  order: 1
+                  type: String
+
+                _modifiedby_value:
+                  displayName: Modified By (Value)
+                  description: Unique identifier of the user who modified the record.
+                  visibility: Advanced
+                  order: 10
+                  type: String
+
+                _modifiedby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Modified By (Type)
+                  description: Unique identifier of the user who modified the record.
+                  visibility: Advanced
+                  order: 9
+                  type: String
+
+                _modifiedonbehalfby_value:
+                  displayName: Modified By (Delegate) (Value)
+                  description: Unique identifier of the delegate user who modified the record.
+                  visibility: Advanced
+                  order: 8
+                  type: String
+
+                _modifiedonbehalfby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Modified By (Delegate) (Type)
+                  description: Unique identifier of the delegate user who modified the record.
+                  visibility: Advanced
+                  order: 7
+                  type: String
+
+                _ownerid_value:
+                  displayName: Owner (Value)
+                  description: Owner Id
+                  visibility: Advanced
+                  order: 15
+                  type: String
+
+                _ownerid_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Owner (Type)
+                  description: Owner Id
+                  visibility: Advanced
+                  order: 14
+                  type: String
+
+                _owningbusinessunit_value:
+                  displayName: Owning Business Unit (Value)
+                  description: Unique identifier for the business unit that owns the record
+                  visibility: Advanced
+                  order: 17
+                  type: String
+
+                _owningbusinessunit_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Owning Business Unit (Type)
+                  description: Unique identifier for the business unit that owns the record
+                  visibility: Advanced
+                  order: 16
+                  type: String
+
+                _owningteam_value:
+                  displayName: Owning Team (Value)
+                  description: Unique identifier for the team that owns the record.
+                  visibility: Advanced
+                  order: 19
+                  type: String
+
+                _owningteam_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Owning Team (Type)
+                  description: Unique identifier for the team that owns the record.
+                  visibility: Advanced
+                  order: 18
+                  type: String
+
+                _owninguser_value:
+                  displayName: Owning User (Value)
+                  description: Unique identifier for the user that owns the record.
+                  visibility: Advanced
+                  order: 21
+                  type: String
+
+                _owninguser_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Owning User (Type)
+                  description: Unique identifier for the user that owns the record.
+                  visibility: Advanced
+                  order: 20
+                  type: String
+
+                @odata.id:
+                  displayName: OData Id
+                  description: OData row id
+                  order: 13
+                  type: String
+
+                createdon:
+                  displayName: Created On
+                  description: Date and time when the record was created.
+                  visibility: Advanced
+                  order: 5
+                  type: DateTime
+
+                importsequencenumber:
+                  displayName: Import Sequence Number
+                  description: Sequence number of the import that created this record.
+                  visibility: Advanced
+                  order: 6
+                  type: Number
+
+                modifiedon:
+                  displayName: Modified On
+                  description: Date and time when the record was modified.
+                  visibility: Advanced
+                  order: 11
+                  type: DateTime
+
+                msft_assessmentid:
+                  displayName: Assessment
+                  description: Unique identifier for entity instances
+                  visibility: Advanced
+                  order: 0
+                  type: String
+
+                msft_name:
+                  displayName: Name
+                  order: 12
+                  type: String
+
+                msft_scanenvironment:
+                  displayName: Scan Environment
+                  visibility: Advanced
+                  order: 23
+                  type: Boolean
+
+                msft_scantelemetry:
+                  displayName: Scan Telemetry
+                  visibility: Advanced
+                  order: 24
+                  type: Boolean
+
+                msft_scantenant:
+                  displayName: Scan Tenant
+                  visibility: Advanced
+                  order: 25
+                  type: Boolean
+
+                overriddencreatedon:
+                  displayName: Record Created On
+                  description: Date and time that the record was migrated.
+                  visibility: Advanced
+                  order: 22
+                  type: DateTime
+
+                statecode:
+                  displayName: Status
+                  description: Status of the Assessment
+                  visibility: Advanced
+                  order: 26
+                  dynamicValuesConfig:
+                    capability: List
+
+                  type: Number
+
+                statuscode:
+                  displayName: Status Reason
+                  description: Reason for the status of the Assessment
+                  visibility: Advanced
+                  order: 27
+                  dynamicValuesConfig:
+                    capability: List
+
+                  type: Number
+
+                timezoneruleversionnumber:
+                  displayName: Time Zone Rule Version Number
+                  description: For internal use only.
+                  visibility: Advanced
+                  order: 28
+                  type: Number
+
+                utcconversiontimezonecode:
+                  displayName: UTC Conversion Time Zone Code
+                  description: Time zone code that was in use when the record was created.
+                  visibility: Advanced
+                  order: 29
+                  type: Number
+
+                versionnumber:
+                  displayName: Version Number
+                  description: Version Number
+                  visibility: Advanced
+                  order: 30
+                  type: Number
+
+      operationId: ListRecordsWithOrganization
+
+    - kind: SendActivity
+      id: sendActivity_1abK62
+      activity: "{Topic.ListRecordsWithOrganization.value}"
+
+    - kind: InvokeAIBuilderModelAction
+      id: invokeAIBuilderModelAction_qRxvYc
+      input:
+        binding:
+          text: =Global.AssessmentRecord.msft_assessmentid
+
+      output:
+        binding:
+          predictionOutput: Topic.AnswerList
+
+      aIModelId: 19df0b00-17aa-43ee-88a9-537c2c2b5137
+
+    - kind: SendActivity
+      id: sendActivity_zl8jwH
+      activity: "{Topic.AnswerList}"
+
+    - kind: Question
+      id: question_vOzXEC
+      interruptionPolicy:
+        allowInterruption: true
+
+      variable: init:Global.readoutFile
+      prompt: |-
+        Please _provide_ the **readout** file.
+        **{System.Activity.ChannelId}**
+      entity:
+        kind: FilePrebuiltEntity
+        includeFileMetadata: true
+
+inputType: {}
+outputType: {}

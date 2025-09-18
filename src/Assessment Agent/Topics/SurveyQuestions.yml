@@ -1,0 +1,1030 @@
+kind: AdaptiveDialog
+modelDescription: Use this topic to get all of the Assessment Questions and ask the user for responses to each individual question only once.
+beginDialog:
+  kind: OnRedirect
+  id: main
+  actions:
+    - kind: InvokeConnectorAction
+      id: invokeConnectorAction_J9avIs
+      input:
+        binding:
+          $filter: objecttypecode eq 'msft_assessmentquestion'
+          entityName: stringmaps
+          organization: current
+
+      output:
+        kind: SingleVariableOutputBinding
+        variable: Topic.ListCategoryNames
+
+      connectionReference: creb3_assessmentAgent.shared_commondataserviceforapps.shared-commondataser-89af8e8c-6cac-4b94-aa58-a5030933b079
+      connectionProperties:
+        mode: Invoker
+
+      dynamicOutputSchema:
+        kind: Record
+        properties:
+          @odata.nextLink:
+            displayName: Next link
+            description: The url to fetch next page data.
+            visibility: Advanced
+            order: 1
+            type: String
+
+          value:
+            order: 0
+            type:
+              kind: Table
+              properties:
+                @odata.id:
+                  displayName: OData Id
+                  description: OData row id
+                  order: 5
+                  type: String
+
+                attributename:
+                  displayName: AttributeName
+                  order: 0
+                  type: String
+
+                attributevalue:
+                  displayName: AttributeValue
+                  order: 1
+                  type: Number
+
+                displayorder:
+                  displayName: DisplayOrder
+                  visibility: Advanced
+                  order: 2
+                  type: Number
+
+                langid:
+                  displayName: LangId
+                  order: 3
+                  type: Number
+
+                objecttypecode:
+                  displayName: ObjectTypeCode
+                  order: 4
+                  dynamicValuesConfig:
+                    capability: List
+
+                  type: String
+
+                organizationid:
+                  displayName: OrganizationId
+                  order: 6
+                  type: String
+
+                stringmapid:
+                  displayName: StringMapId
+                  description: Unique identifier of the string map.
+                  visibility: Advanced
+                  order: 7
+                  type: String
+
+                value:
+                  displayName: Value
+                  visibility: Advanced
+                  order: 8
+                  type: String
+
+                versionnumber:
+                  displayName: VersionNumber
+                  visibility: Advanced
+                  order: 9
+                  type: Number
+
+      operationId: ListRecordsWithOrganization
+
+    - kind: InvokeAIBuilderModelAction
+      id: invokeAIBuilderModelAction_Ulbo26
+      input:
+        binding:
+          CategoryListInput: =JSON(Topic.ListCategoryNames)
+          CategoryListNames: =JSON(Topic.ListCategoryNames)
+
+      output:
+        binding:
+          predictionOutput: Topic.CategoryListOutput
+
+      aIModelId: cb848569-032d-4bd8-9472-a606411d056f
+
+    - kind: AdaptiveCardPrompt
+      id: WIib98
+      card: =Topic.CategoryListOutput.structuredOutput
+      output: {}
+      outputType: {}
+
+    - kind: SetVariable
+      id: setVariable_WFV1N1
+      variable: Topic.AssessmentType
+      value: =Text(System.Activity.Value.AssessmentSelected)
+
+    - kind: SendActivity
+      id: sendActivity_tbvhxn
+      activity: "{Topic.AssessmentType}"
+
+    - kind: InvokeConnectorAction
+      id: invokeConnectorAction_xad6SA
+      input:
+        binding:
+          $filter: ="objecttypecode eq 'msft_assessmentquestion' and value eq '" &Text(Topic.AssessmentType) & "'"
+          entityName: stringmaps
+          organization: current
+
+      output:
+        kind: SingleVariableOutputBinding
+        variable: Topic.ListCategories
+
+      connectionReference: creb3_assessmentAgent.shared_commondataserviceforapps.shared-commondataser-89af8e8c-6cac-4b94-aa58-a5030933b079
+      connectionProperties:
+        mode: Invoker
+
+      dynamicOutputSchema:
+        kind: Record
+        properties:
+          @odata.nextLink:
+            displayName: Next link
+            description: The url to fetch next page data.
+            visibility: Advanced
+            order: 1
+            type: String
+
+          value:
+            order: 0
+            type:
+              kind: Table
+              properties:
+                @odata.id:
+                  displayName: OData Id
+                  description: OData row id
+                  order: 5
+                  type: String
+
+                attributename:
+                  displayName: AttributeName
+                  order: 0
+                  type: String
+
+                attributevalue:
+                  displayName: AttributeValue
+                  order: 1
+                  type: Number
+
+                displayorder:
+                  displayName: DisplayOrder
+                  visibility: Advanced
+                  order: 2
+                  type: Number
+
+                langid:
+                  displayName: LangId
+                  order: 3
+                  type: Number
+
+                objecttypecode:
+                  displayName: ObjectTypeCode
+                  order: 4
+                  dynamicValuesConfig:
+                    capability: List
+
+                  type: String
+
+                organizationid:
+                  displayName: OrganizationId
+                  order: 6
+                  type: String
+
+                stringmapid:
+                  displayName: StringMapId
+                  description: Unique identifier of the string map.
+                  visibility: Advanced
+                  order: 7
+                  type: String
+
+                value:
+                  displayName: Value
+                  visibility: Advanced
+                  order: 8
+                  type: String
+
+                versionnumber:
+                  displayName: VersionNumber
+                  visibility: Advanced
+                  order: 9
+                  type: Number
+
+      operationId: ListRecordsWithOrganization
+
+    - kind: SetVariable
+      id: setVariable_YJOhSk
+      variable: Topic.Var2
+      value: =Text(First(Topic.ListCategories.value).attributevalue)
+
+    - kind: InvokeConnectorAction
+      id: invokeConnectorAction_3VAMrh
+      input:
+        binding:
+          $filter: ="msft_category eq " & Topic.Var2
+          entityName: msft_assessmentquestions
+          organization: current
+
+      output:
+        kind: SingleVariableOutputBinding
+        variable: Topic.ListQuestions
+
+      connectionReference: creb3_assessmentAgent.shared_commondataserviceforapps.shared-commondataser-89af8e8c-6cac-4b94-aa58-a5030933b079
+      connectionProperties:
+        mode: Invoker
+
+      dynamicOutputSchema:
+        kind: Record
+        properties:
+          @odata.nextLink:
+            displayName: Next link
+            description: The url to fetch next page data.
+            visibility: Advanced
+            order: 1
+            type: String
+
+          value:
+            order: 0
+            type:
+              kind: Table
+              properties:
+                _createdby_value:
+                  displayName: Created By (Value)
+                  description: Unique identifier of the user who created the record.
+                  visibility: Advanced
+                  order: 8
+                  type: String
+
+                _createdby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Created By (Type)
+                  description: Unique identifier of the user who created the record.
+                  visibility: Advanced
+                  order: 7
+                  type: String
+
+                _createdonbehalfby_value:
+                  displayName: Created By (Delegate) (Value)
+                  description: Unique identifier of the delegate user who created the record.
+                  visibility: Advanced
+                  order: 6
+                  type: String
+
+                _createdonbehalfby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Created By (Delegate) (Type)
+                  description: Unique identifier of the delegate user who created the record.
+                  visibility: Advanced
+                  order: 5
+                  type: String
+
+                _modifiedby_value:
+                  displayName: Modified By (Value)
+                  description: Unique identifier of the user who modified the record.
+                  visibility: Advanced
+                  order: 14
+                  type: String
+
+                _modifiedby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Modified By (Type)
+                  description: Unique identifier of the user who modified the record.
+                  visibility: Advanced
+                  order: 13
+                  type: String
+
+                _modifiedonbehalfby_value:
+                  displayName: Modified By (Delegate) (Value)
+                  description: Unique identifier of the delegate user who modified the record.
+                  visibility: Advanced
+                  order: 12
+                  type: String
+
+                _modifiedonbehalfby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Modified By (Delegate) (Type)
+                  description: Unique identifier of the delegate user who modified the record.
+                  visibility: Advanced
+                  order: 11
+                  type: String
+
+                _msft_assessment_value:
+                  displayName: Assessment (Value)
+                  visibility: Advanced
+                  order: 1
+                  type: String
+
+                _msft_assessment_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Assessment (Type)
+                  visibility: Advanced
+                  order: 0
+                  type: String
+
+                _ownerid_value:
+                  displayName: Owner (Value)
+                  description: Owner Id
+                  visibility: Advanced
+                  order: 19
+                  type: String
+
+                _ownerid_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Owner (Type)
+                  description: Owner Id
+                  visibility: Advanced
+                  order: 18
+                  type: String
+
+                _owningbusinessunit_value:
+                  displayName: Owning Business Unit (Value)
+                  description: Unique identifier for the business unit that owns the record
+                  visibility: Advanced
+                  order: 21
+                  type: String
+
+                _owningbusinessunit_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Owning Business Unit (Type)
+                  description: Unique identifier for the business unit that owns the record
+                  visibility: Advanced
+                  order: 20
+                  type: String
+
+                _owningteam_value:
+                  displayName: Owning Team (Value)
+                  description: Unique identifier for the team that owns the record.
+                  visibility: Advanced
+                  order: 23
+                  type: String
+
+                _owningteam_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Owning Team (Type)
+                  description: Unique identifier for the team that owns the record.
+                  visibility: Advanced
+                  order: 22
+                  type: String
+
+                _owninguser_value:
+                  displayName: Owning User (Value)
+                  description: Unique identifier for the user that owns the record.
+                  visibility: Advanced
+                  order: 25
+                  type: String
+
+                _owninguser_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                  displayName: Owning User (Type)
+                  description: Unique identifier for the user that owns the record.
+                  visibility: Advanced
+                  order: 24
+                  type: String
+
+                @odata.id:
+                  displayName: OData Id
+                  description: OData row id
+                  order: 17
+                  type: String
+
+                createdon:
+                  displayName: Created On
+                  description: Date and time when the record was created.
+                  visibility: Advanced
+                  order: 9
+                  type: DateTime
+
+                importsequencenumber:
+                  displayName: Import Sequence Number
+                  description: Sequence number of the import that created this record.
+                  visibility: Advanced
+                  order: 10
+                  type: Number
+
+                modifiedon:
+                  displayName: Modified On
+                  description: Date and time when the record was modified.
+                  visibility: Advanced
+                  order: 15
+                  type: DateTime
+
+                msft_assessmentquestionid:
+                  displayName: Assessment Question
+                  description: Unique identifier for entity instances
+                  visibility: Advanced
+                  order: 2
+                  type: String
+
+                msft_category:
+                  displayName: Category
+                  visibility: Advanced
+                  order: 3
+                  dynamicValuesConfig:
+                    capability: List
+
+                  type: Number
+
+                msft_choicequestiontype:
+                  displayName: Choice Question Type
+                  visibility: Advanced
+                  order: 4
+                  dynamicValuesConfig:
+                    capability: List
+
+                  type: Number
+
+                msft_name:
+                  displayName: Question
+                  order: 26
+                  type: String
+
+                msft_note:
+                  displayName: Note
+                  visibility: Advanced
+                  order: 16
+                  type: String
+
+                msft_questionchoices:
+                  displayName: Question Choices
+                  visibility: Advanced
+                  order: 27
+                  type: String
+
+                msft_questiontext:
+                  displayName: Question Text
+                  visibility: Advanced
+                  order: 28
+                  type: String
+
+                msft_questiontype:
+                  displayName: Question Type
+                  visibility: Advanced
+                  order: 29
+                  dynamicValuesConfig:
+                    capability: List
+
+                  type: Number
+
+                msft_subtitle:
+                  displayName: Subtitle
+                  visibility: Advanced
+                  order: 33
+                  type: String
+
+                overriddencreatedon:
+                  displayName: Record Created On
+                  description: Date and time that the record was migrated.
+                  visibility: Advanced
+                  order: 30
+                  type: DateTime
+
+                statecode:
+                  displayName: Status
+                  description: Status of the Assessment Question
+                  visibility: Advanced
+                  order: 31
+                  dynamicValuesConfig:
+                    capability: List
+
+                  type: Number
+
+                statuscode:
+                  displayName: Status Reason
+                  description: Reason for the status of the Assessment Question
+                  visibility: Advanced
+                  order: 32
+                  dynamicValuesConfig:
+                    capability: List
+
+                  type: Number
+
+                timezoneruleversionnumber:
+                  displayName: Time Zone Rule Version Number
+                  description: For internal use only.
+                  visibility: Advanced
+                  order: 34
+                  type: Number
+
+                utcconversiontimezonecode:
+                  displayName: UTC Conversion Time Zone Code
+                  description: Time zone code that was in use when the record was created.
+                  visibility: Advanced
+                  order: 35
+                  type: Number
+
+                versionnumber:
+                  displayName: Version Number
+                  description: Version Number
+                  visibility: Advanced
+                  order: 36
+                  type: Number
+
+      operationId: ListRecordsWithOrganization
+
+    - kind: Foreach
+      id: foreach_0FrLuW
+      items: =Topic.ListQuestions.value
+      value: init:Topic.LoopValue1
+      index: init:Topic.LoopIndex1
+      actions:
+        - kind: ConditionGroup
+          id: conditionGroup_tNpVZg
+          conditions:
+            - id: conditionItem_nt7ATu
+              condition: =Topic.LoopValue1.msft_questiontype = 459240001
+              displayName: Text
+              actions:
+                - kind: Question
+                  id: question_NFNgNG
+                  displayName: TextQuestion
+                  interruptionPolicy:
+                    allowInterruption: false
+
+                  alwaysPrompt: true
+                  variable: Topic.QuestionUserAnswer
+                  prompt: "{Topic.LoopValue1.msft_note}{Topic.LoopValue1.msft_questiontext}"
+                  entity:
+                    kind: StringPrebuiltEntity
+                    sensitivityLevel: None
+
+            - id: conditionItem_Xc8aLH
+              condition: =Topic.LoopValue1.msft_questiontype = 459240000
+              displayName: Choice
+              actions:
+                - kind: Question
+                  id: question_LoYTUt
+                  displayName: ChoiceQuestion
+                  interruptionPolicy:
+                    allowInterruption: false
+
+                  alwaysPrompt: true
+                  variable: init:Topic.Var1
+                  prompt: "{Topic.LoopValue1.msft_questiontext}"
+                  entity:
+                    kind: EmbeddedEntity
+                    definition:
+                      kind: ClosedListEntity
+                      items:
+                        - id: Yes
+                          displayName: Yes
+
+                        - id: No
+                          displayName: No
+
+                - kind: ConditionGroup
+                  id: conditionGroup_gz5cyQ
+                  conditions:
+                    - id: conditionItem_XtfKuJ
+                      condition: =Topic.Var1 = 'creb3_assessmentAgent.topic.Untitled.main.question_LoYTUt'.Yes
+
+                    - id: conditionItem_7i1SGN
+                      condition: =Topic.Var1 = 'creb3_assessmentAgent.topic.Untitled.main.question_LoYTUt'.No
+
+                  elseActions:
+                    - kind: SendActivity
+                      id: sendActivity_t0xnoB
+                      activity: The ResponseType is not recongnized, please try again.
+
+                    - kind: EndDialog
+                      id: zjKJyB
+
+                - kind: SetVariable
+                  id: setVariable_top4ik
+                  variable: Topic.QuestionUserAnswer
+                  value: =Text(Topic.Var1)
+
+          elseActions:
+            - kind: SendActivity
+              id: sendActivity_evCnwD
+              activity: The question type is not valid. Please start a new session.
+
+            - kind: EndDialog
+              id: SuqaIL
+
+        - kind: InvokeConnectorAction
+          id: invokeConnectorAction_tAS0CH
+          input:
+            binding:
+              entityName: msft_assessmentquestionresponses
+              item: |-
+                ={'creb3_ParentAssessment@odata.bind': Concatenate(
+                    "/msft_assessments(",
+                    Text(Global.AssessmentRecord.msft_assessmentid),
+                    ")"
+                ), 'msft_AssessmentQuestion@odata.bind': Concatenate(
+                    "/msft_assessmentquestions(",
+                    Text(Topic.LoopValue1.msft_assessmentquestionid),
+                    ")"
+                ), msft_name: Topic.QuestionUserAnswer}
+              organization: current
+
+          output:
+            kind: SingleVariableOutputBinding
+            variable: Topic.CreateRecordWithOrganization
+
+          connectionReference: creb3_assessmentAgent.shared_commondataserviceforapps.shared-commondataser-89af8e8c-6cac-4b94-aa58-a5030933b079
+          connectionProperties:
+            mode: Invoker
+
+          dynamicInputSchema:
+            properties:
+              entityName:
+                displayName: Table name
+                description: Choose a table
+                isRequired: true
+                order: 1
+                dynamicValuesConfig:
+                  capability: List
+
+                type: String
+
+              item:
+                displayName: Row Item
+                description: Row to create
+                isRequired: true
+                order: 2
+                type:
+                  kind: Record
+                  properties:
+                    creb3_ParentAssessment@odata.bind:
+                      displayName: Parent Assessment (Assessments)
+                      visibility: Advanced
+                      order: 6
+                      type: String
+
+                    importsequencenumber:
+                      displayName: Import Sequence Number
+                      description: Sequence number of the import that created this record.
+                      visibility: Advanced
+                      order: 3
+                      type: Number
+
+                    msft_AssessmentQuestion@odata.bind:
+                      displayName: Assessment Question (Assessment Questions)
+                      visibility: Advanced
+                      order: 1
+                      type: String
+
+                    msft_assessmentquestionresponseid:
+                      displayName: Assessment Question Response
+                      description: Unique identifier for entity instances
+                      visibility: Advanced
+                      order: 2
+                      type: String
+
+                    msft_name:
+                      displayName: Answer
+                      isRequired: true
+                      order: 0
+                      type: String
+
+                    msft_RelatedAssessment@odata.bind:
+                      displayName: Related Assessment (Assessments)
+                      visibility: Advanced
+                      order: 8
+                      type: String
+
+                    msft_selected:
+                      displayName: Selected
+                      visibility: Advanced
+                      order: 9
+                      type: Boolean
+
+                    msft_selectedanswer:
+                      displayName: Selected Answer
+                      visibility: Advanced
+                      order: 10
+                      type: String
+
+                    overriddencreatedon:
+                      displayName: Record Created On
+                      description: Date and time that the record was migrated.
+                      visibility: Advanced
+                      order: 7
+                      type: DateTime
+
+                    ownerid@odata.bind:
+                      displayName: Owner (Owners)
+                      description: Owner Id
+                      visibility: Advanced
+                      order: 4
+                      type: String
+
+                    owningbusinessunit@odata.bind:
+                      displayName: Owning Business Unit (Business Units)
+                      description: Unique identifier for the business unit that owns the record
+                      visibility: Advanced
+                      order: 5
+                      type: String
+
+                    statuscode:
+                      displayName: Status Reason
+                      description: Reason for the status of the Assessment Question Response
+                      visibility: Advanced
+                      order: 11
+                      dynamicValuesConfig:
+                        capability: List
+
+                      type: Number
+
+                    timezoneruleversionnumber:
+                      displayName: Time Zone Rule Version Number
+                      description: For internal use only.
+                      visibility: Advanced
+                      order: 12
+                      type: Number
+
+                    utcconversiontimezonecode:
+                      displayName: UTC Conversion Time Zone Code
+                      description: Time zone code that was in use when the record was created.
+                      visibility: Advanced
+                      order: 13
+                      type: Number
+
+              organization:
+                displayName: Environment
+                description: Choose an environment
+                isRequired: true
+                order: 0
+                dynamicValuesConfig:
+                  capability: List
+
+                type: String
+
+              x-ms-odata-metadata-full:
+                displayName: Return Full Metadata
+                description: The header parameter to customer to opt-in returning full odata metadata in response.
+                visibility: Advanced
+                order: 3
+                type: Boolean
+
+          dynamicOutputSchema:
+            kind: Record
+            properties:
+              _createdby_value:
+                displayName: Created By (Value)
+                description: Unique identifier of the user who created the record.
+                visibility: Advanced
+                order: 7
+                type: String
+
+              _createdby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Created By (Type)
+                description: Unique identifier of the user who created the record.
+                visibility: Advanced
+                order: 6
+                type: String
+
+              _createdonbehalfby_value:
+                displayName: Created By (Delegate) (Value)
+                description: Unique identifier of the delegate user who created the record.
+                visibility: Advanced
+                order: 5
+                type: String
+
+              _createdonbehalfby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Created By (Delegate) (Type)
+                description: Unique identifier of the delegate user who created the record.
+                visibility: Advanced
+                order: 4
+                type: String
+
+              _creb3_parentassessment_value:
+                displayName: Parent Assessment (Value)
+                visibility: Advanced
+                order: 25
+                type: String
+
+              _creb3_parentassessment_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Parent Assessment (Type)
+                visibility: Advanced
+                order: 24
+                type: String
+
+              _modifiedby_value:
+                displayName: Modified By (Value)
+                description: Unique identifier of the user who modified the record.
+                visibility: Advanced
+                order: 13
+                type: String
+
+              _modifiedby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Modified By (Type)
+                description: Unique identifier of the user who modified the record.
+                visibility: Advanced
+                order: 12
+                type: String
+
+              _modifiedonbehalfby_value:
+                displayName: Modified By (Delegate) (Value)
+                description: Unique identifier of the delegate user who modified the record.
+                visibility: Advanced
+                order: 11
+                type: String
+
+              _modifiedonbehalfby_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Modified By (Delegate) (Type)
+                description: Unique identifier of the delegate user who modified the record.
+                visibility: Advanced
+                order: 10
+                type: String
+
+              _msft_assessmentquestion_value:
+                displayName: Assessment Question (Value)
+                visibility: Advanced
+                order: 2
+                type: String
+
+              _msft_assessmentquestion_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Assessment Question (Type)
+                visibility: Advanced
+                order: 1
+                type: String
+
+              _msft_relatedassessment_value:
+                displayName: Related Assessment (Value)
+                visibility: Advanced
+                order: 28
+                type: String
+
+              _msft_relatedassessment_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Related Assessment (Type)
+                visibility: Advanced
+                order: 27
+                type: String
+
+              _ownerid_value:
+                displayName: Owner (Value)
+                description: Owner Id
+                visibility: Advanced
+                order: 17
+                type: String
+
+              _ownerid_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Owner (Type)
+                description: Owner Id
+                visibility: Advanced
+                order: 16
+                type: String
+
+              _owningbusinessunit_value:
+                displayName: Owning Business Unit (Value)
+                description: Unique identifier for the business unit that owns the record
+                visibility: Advanced
+                order: 19
+                type: String
+
+              _owningbusinessunit_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Owning Business Unit (Type)
+                description: Unique identifier for the business unit that owns the record
+                visibility: Advanced
+                order: 18
+                type: String
+
+              _owningteam_value:
+                displayName: Owning Team (Value)
+                description: Unique identifier for the team that owns the record.
+                visibility: Advanced
+                order: 21
+                type: String
+
+              _owningteam_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Owning Team (Type)
+                description: Unique identifier for the team that owns the record.
+                visibility: Advanced
+                order: 20
+                type: String
+
+              _owninguser_value:
+                displayName: Owning User (Value)
+                description: Unique identifier for the user that owns the record.
+                visibility: Advanced
+                order: 23
+                type: String
+
+              _owninguser_value@Microsoft.Dynamics.CRM.lookuplogicalname:
+                displayName: Owning User (Type)
+                description: Unique identifier for the user that owns the record.
+                visibility: Advanced
+                order: 22
+                type: String
+
+              @odata.id:
+                displayName: OData Id
+                description: OData row id
+                order: 15
+                type: String
+
+              createdon:
+                displayName: Created On
+                description: Date and time when the record was created.
+                visibility: Advanced
+                order: 8
+                type: DateTime
+
+              importsequencenumber:
+                displayName: Import Sequence Number
+                description: Sequence number of the import that created this record.
+                visibility: Advanced
+                order: 9
+                type: Number
+
+              modifiedon:
+                displayName: Modified On
+                description: Date and time when the record was modified.
+                visibility: Advanced
+                order: 14
+                type: DateTime
+
+              msft_assessmentquestionresponseid:
+                displayName: Assessment Question Response
+                description: Unique identifier for entity instances
+                visibility: Advanced
+                order: 3
+                type: String
+
+              msft_name:
+                displayName: Answer
+                order: 0
+                type: String
+
+              msft_selected:
+                displayName: Selected
+                visibility: Advanced
+                order: 29
+                type: Boolean
+
+              msft_selectedanswer:
+                displayName: Selected Answer
+                visibility: Advanced
+                order: 30
+                type: String
+
+              overriddencreatedon:
+                displayName: Record Created On
+                description: Date and time that the record was migrated.
+                visibility: Advanced
+                order: 26
+                type: DateTime
+
+              statecode:
+                displayName: Status
+                description: Status of the Assessment Question Response
+                visibility: Advanced
+                order: 31
+                dynamicValuesConfig:
+                  capability: List
+
+                type: Number
+
+              statuscode:
+                displayName: Status Reason
+                description: Reason for the status of the Assessment Question Response
+                visibility: Advanced
+                order: 32
+                dynamicValuesConfig:
+                  capability: List
+
+                type: Number
+
+              timezoneruleversionnumber:
+                displayName: Time Zone Rule Version Number
+                description: For internal use only.
+                visibility: Advanced
+                order: 33
+                type: Number
+
+              utcconversiontimezonecode:
+                displayName: UTC Conversion Time Zone Code
+                description: Time zone code that was in use when the record was created.
+                visibility: Advanced
+                order: 34
+                type: Number
+
+              versionnumber:
+                displayName: Version Number
+                description: Version Number
+                visibility: Advanced
+                order: 35
+                type: Number
+
+          operationId: CreateRecordWithOrganization
+
+    - kind: BreakLoop
+      id: 6GUgPZ
+
+    - kind: SetVariable
+      id: setVariable_Lyx7K1
+      variable: Topic.AssessmentNumber
+      value: =GUID(Global.AssessmentRecord.msft_assessmentid)
+
+    - kind: BeginDialog
+      id: TBahha
+      dialog: creb3_assessmentAgent.topic.DetermineWhatAutomationToRun
+
+inputType:
+  properties:
+    QuestionUserAnswer:
+      displayName: QuestionUserAnswer
+      type: String
+
+outputType:
+  properties:
+    QuestionUserAnswer:
+      displayName: QuestionUserAnswer
+      type: String
